@@ -13,9 +13,8 @@ Wander Warriors é um projeto desenvolvido para a matéria Algoritmos e Lógica 
 
 ## Sumário
 1. [Ferramentas utilizadas](#ferramentas-utilizadas)
-2. [Colaboradores](#colaboradores)
-3. [Pré-requisitos](#pré-requisitos)
-4. [Como executar o projeto](#como-executar-o-projeto)
+2. [Pré-requisitos](#pré-requisitos)
+3. [Como executar o projeto](#como-executar-o-projeto)
 
 ----
 
