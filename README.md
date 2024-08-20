@@ -1,7 +1,15 @@
 # Wander Warriors
 Wander Warriors é um projeto desenvolvido para a matéria Algoritmos e Lógica de Programação do curso de ADS. Este projeto é um jogo desenvolvido em Python utilizando a biblioteca Pygame.
 
-----
+---
+
+
+## Colaboradores:
+- Hellen Lima
+- Isac Braz
+- Mateus Ferreira
+
+---
 
 ## Sumário
 1. [Ferramentas utilizadas](#ferramentas-utilizadas)
@@ -15,11 +23,6 @@ Wander Warriors é um projeto desenvolvido para a matéria Algoritmos e Lógica 
 ![ferramentas](https://skillicons.dev/icons?i=python,vscode)
 
 ---
-
-## Colaboradores:
-- Hellen Lima
-- Isac Braz
-- Mateus Ferreira
 
 ## Pré-requisitos
 1. Instalar o [Python](https://www.python.org/) na sua máquina. (Versão recomendada: Python 3.x)
