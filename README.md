@@ -13,8 +13,9 @@ Wander Warriors é um projeto desenvolvido para a matéria Algoritmos e Lógica 
 
 ## Sumário
 1. [Ferramentas utilizadas](#ferramentas-utilizadas)
-2. [Pré-requisitos](#pré-requisitos)
-3. [Como executar o projeto](#como-executar-o-projeto)
+2. [Prévia do jogo](#previa-do-jogo)
+3. [Pré-requisitos](#pré-requisitos)
+4. [Como executar o projeto](#como-executar-o-projeto)
 
 ----
 
@@ -23,9 +24,15 @@ Wander Warriors é um projeto desenvolvido para a matéria Algoritmos e Lógica 
 
 ---
 
+## Prévia do jogo
+<img src=''>
+
+---
+
 ## Pré-requisitos
-1. Instalar o [Python](https://www.python.org/) na sua máquina. (Versão recomendada: Python 3.x)
-2. Instalar a biblioteca [Pygame](https://www.pygame.org/wiki/GettingStarted):
+1. Instalar o [Git](https://git-scm.com/downloads)
+2. Instalar o [Python](https://www.python.org/) na sua máquina. (Versão recomendada: Python 3.x)
+3. Instalar a biblioteca [Pygame](https://www.pygame.org/wiki/GettingStarted):
    - **Linux:**
       ```shell
       sudo apt install python3-pip
