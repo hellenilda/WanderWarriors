@@ -1,14 +1,14 @@
 import pygame
 
 largura = 1920
-altura = 1080
+altura = 960
 loop = True
-imagem_fundo = pygame.image.load('Wander-Warriors/src/cenario.png')
-player = pygame.image.load()
-givo = pygame.image.load()
-raf = pygame.image.load()
-hel = pygame.image.load()
-mat = pygame.image.load()
+imagem_fundo = pygame.image.load('assets/cenarios')
+# player = pygame.image.load()
+# givo = pygame.image.load()
+# raf = pygame.image.load()
+# hel = pygame.image.load()
+# mat = pygame.image.load()
 pos_y_player = 400
 pos_x_player = 420
 vel_player = 10
@@ -34,4 +34,4 @@ while loop:
     pos_x_player += vel_player
   pygame.display.update()
   janela.blit(imagem_fundo, (0,0))
-  janela.blit(player, (400,300))
+#   janela.blit(player, (400,300))
