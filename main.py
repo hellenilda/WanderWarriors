@@ -13,7 +13,7 @@ clock = pygame.time.Clock()
 
 # Carregamento das imagens e redimensionamento dos personagens
 cenario = pygame.image.load('assets/cenário.png').convert_alpha()
-player_image = pygame.image.load('assets/personagens/player.png').convert_alpha()
+wanderley = pygame.image.load('Sprites /Vander/Baixo/Sprite-baixo-2.png').convert_alpha()
 enemy_image = pygame.image.load('assets/personagens/inimigos.png').convert_alpha()
 
 largura_enemy, altura_enemy = enemy_image.get_size()
@@ -25,7 +25,7 @@ pos_x_enemy, pos_y_enemy = 500, 300
 class Player(pygame.sprite.Sprite):
     def __init__(self, pos, group):
         super().__init__(group)
-        self.image = player_image
+        self.image = wanderley
         self.rect = self.image.get_rect(center=pos)
         self.direction = pygame.math.Vector2()
         self.speed = 8
