@@ -16,10 +16,6 @@ cenario = pygame.image.load('assets/cenário.png').convert_alpha()
 player_image = pygame.image.load('assets/personagens/player.png').convert_alpha()
 enemy_image = pygame.image.load('assets/personagens/inimigos.png').convert_alpha()
 
-# Redimensionar os personagens
-largura_player, altura_player = player_image.get_size()
-player_image = pygame.transform.scale(player_image, (largura_player // 2, altura_player // 2))
-
 largura_enemy, altura_enemy = enemy_image.get_size()
 enemy_image = pygame.transform.scale(enemy_image, (largura_enemy // 2, altura_enemy // 2))
 
