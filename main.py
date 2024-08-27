@@ -10,8 +10,8 @@ janela = pygame.display.set_mode((largura, altura))
 pygame.display.set_caption('Wander Warriors')
 
 # Carregamento das imagens e redimensionamento dos personagens
-player = pygame.image.load('C:/personagens/s.png')
-enemy = pygame.image.load('C:/personagens/mario.png')
+player = pygame.image.load('assets/personagens/player.png')
+enemy = pygame.image.load('assets/personagens/inimigos.png')
 
 # Redimensionar os personagens (exemplo: metade do tamanho original)
 largura_player, altura_player = player.get_size()
