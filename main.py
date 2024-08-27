@@ -28,7 +28,7 @@ class Player(pygame.sprite.Sprite):
         self.image = player_image
         self.rect = self.image.get_rect(center=pos)
         self.direction = pygame.math.Vector2()
-        self.speed = 5
+        self.speed = 8
 
     def input(self):
         keys = pygame.key.get_pressed()
@@ -90,7 +90,7 @@ class CameraGroup(pygame.sprite.Group):
         self.ground_rect = self.ground_surf.get_rect(topleft=(0,0))
 
         # camera speed
-        self.keyboard_speed = 5
+        self.keyboard_speed = 8
 
         # zoom 
         self.zoom_scale = 1
