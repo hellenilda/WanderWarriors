@@ -10,6 +10,7 @@ janela = pygame.display.set_mode((largura, altura))
 pygame.display.set_caption('Wander Warriors')
 
 # Carregamento das imagens e redimensionamento dos personagens
+cenario = pygame.image.load('assets/cenário.png')
 player = pygame.image.load('assets/personagens/player.png')
 enemy = pygame.image.load('assets/personagens/inimigos.png')
 
@@ -21,8 +22,8 @@ largura_enemy, altura_enemy = enemy.get_size()
 enemy = pygame.transform.scale(enemy, (largura_enemy // 2, altura_enemy // 2))
 
 # Configurações dos personagens
-pos_x_player, pos_y_player = 10, 10
-vel_player = 2
+pos_x_player, pos_y_player = 400, 400
+vel_player = 8
 
 pos_x_enemy, pos_y_enemy = 500, 300
 
@@ -58,7 +59,8 @@ while loop:
         pos_y_player += vel_player if teclas[pygame.K_UP] else 0
 
     # Atualização da tela
-    janela.fill((0, 0, 0))  # Preenche a tela com uma cor preta antes de desenhar as imagens
+    janela.fill((65, 105, 225))  # Preenche a tela com uma cor preta antes de desenhar as imagens
+    janela.blit(cenario, (0, 0))
     janela.blit(player, (pos_x_player, pos_y_player))
     janela.blit(enemy, (pos_x_enemy, pos_y_enemy))
     pygame.display.update()
