@@ -1,16 +1,16 @@
 import pygame, sys
 from random import randint
 
-class Tree(pygame.sprite.Sprite):
-	def __init__(self,pos,group):
-		super().__init__(group)
-		self.image = pygame.image.load('graphics/tree.png').convert_alpha()
-		self.rect = self.image.get_rect(topleft = pos)
+# class Tree(pygame.sprite.Sprite):
+# 	def __init__(self,pos,group):
+# 		super().__init__(group)
+# 		# self.image = pygame.image.load('graphics/tree.png').convert_alpha()
+# 		self.rect = self.image.get_rect(topleft = pos)
 
 class Player(pygame.sprite.Sprite):
 	def __init__(self,pos,group):
 		super().__init__(group)
-		self.image = pygame.image.load('graphics/player.png').convert_alpha()
+		self.image = pygame.image.load('assets/personagens/player.png').convert_alpha()
 		self.rect = self.image.get_rect(center = pos)
 		self.direction = pygame.math.Vector2()
 		self.speed = 5
@@ -55,12 +55,11 @@ class CameraGroup(pygame.sprite.Group):
 		self.camera_rect = pygame.Rect(l,t,w,h)
 
 		# ground
-		self.ground_surf = pygame.image.load('graphics/ground.png').convert_alpha()
+		self.ground_surf = pygame.image.load('assets/cenário.png').convert_alpha()
 		self.ground_rect = self.ground_surf.get_rect(topleft = (0,0))
 
 		# camera speed
 		self.keyboard_speed = 5
-		self.mouse_speed = 0.2
 
 		# zoom 
 		self.zoom_scale = 1
@@ -100,47 +99,6 @@ class CameraGroup(pygame.sprite.Group):
 		self.offset.x = self.camera_rect.left - self.camera_borders['left']
 		self.offset.y = self.camera_rect.top - self.camera_borders['top']
 
-	def mouse_control(self):
-		mouse = pygame.math.Vector2(pygame.mouse.get_pos())
-		mouse_offset_vector = pygame.math.Vector2()
-
-		left_border = self.camera_borders['left']
-		top_border = self.camera_borders['top']
-		right_border = self.display_surface.get_size()[0] - self.camera_borders['right']
-		bottom_border = self.display_surface.get_size()[1] - self.camera_borders['bottom']
-
-		if top_border < mouse.y < bottom_border:
-			if mouse.x < left_border:
-				mouse_offset_vector.x = mouse.x - left_border
-				pygame.mouse.set_pos((left_border,mouse.y))
-			if mouse.x > right_border:
-				mouse_offset_vector.x = mouse.x - right_border
-				pygame.mouse.set_pos((right_border,mouse.y))
-		elif mouse.y < top_border:
-			if mouse.x < left_border:
-				mouse_offset_vector = mouse - pygame.math.Vector2(left_border,top_border)
-				pygame.mouse.set_pos((left_border,top_border))
-			if mouse.x > right_border:
-				mouse_offset_vector = mouse - pygame.math.Vector2(right_border,top_border)
-				pygame.mouse.set_pos((right_border,top_border))
-		elif mouse.y > bottom_border:
-			if mouse.x < left_border:
-				mouse_offset_vector = mouse - pygame.math.Vector2(left_border,bottom_border)
-				pygame.mouse.set_pos((left_border,bottom_border))
-			if mouse.x > right_border:
-				mouse_offset_vector = mouse - pygame.math.Vector2(right_border,bottom_border)
-				pygame.mouse.set_pos((right_border,bottom_border))
-
-		if left_border < mouse.x < right_border:
-			if mouse.y < top_border:
-				mouse_offset_vector.y = mouse.y - top_border
-				pygame.mouse.set_pos((mouse.x,top_border))
-			if mouse.y > bottom_border:
-				mouse_offset_vector.y = mouse.y - bottom_border
-				pygame.mouse.set_pos((mouse.x,bottom_border))
-
-		self.offset += mouse_offset_vector * self.mouse_speed
-
 	def zoom_keyboard_control(self):
 		keys = pygame.key.get_pressed()
 		if keys[pygame.K_q]:
@@ -150,10 +108,8 @@ class CameraGroup(pygame.sprite.Group):
 
 	def custom_draw(self,player):
 		
-		# self.center_target_camera(player)
-		# self.box_target_camera(player)
-		# self.keyboard_control()
-		self.mouse_control()
+		self.center_target_camera(player)
+		
 		self.zoom_keyboard_control()
 
 		self.internal_surf.fill('#71ddee')
@@ -182,10 +138,10 @@ pygame.event.set_grab(True)
 camera_group = CameraGroup()
 player = Player((640,360),camera_group)
 
-for i in range(20):
-	random_x = randint(1000,2000)
-	random_y = randint(1000,2000)
-	Tree((random_x,random_y),camera_group)
+# for i in range(20):
+# 	random_x = randint(1000,2000)
+# 	random_y = randint(1000,2000)
+# 	Tree((random_x,random_y),camera_group)
 
 while True:
 	for event in pygame.event.get():
