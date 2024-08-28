@@ -15,7 +15,7 @@ clock = pygame.time.Clock()
 cenario = pygame.image.load('assets/cenário.png').convert_alpha()
 wanderley_down = [
     pygame.image.load('Sprites/Vander/Baixo/Sprite-baixo-1.png').convert_alpha(),
-    pygame.image.load('Sprites/Vander/Baixo/Sprite-baixo-2.png').convert_alpha(),
+    pygame.image.load('Sprites/Vander/Baixo/Sprite-baixo-2.png').convert_alpha(),  # Idle
     pygame.image.load('Sprites/Vander/Baixo/Sprite-baixo-3.png').convert_alpha(),
 ]
 
@@ -26,8 +26,6 @@ wanderley_up = [
 ]
 
 # Configurações dos personagens
-# pos_x_enemy, pos_y_enemy = 500, 300
-
 class Player(pygame.sprite.Sprite):
     def __init__(self, pos, group):
         super().__init__(group)
@@ -63,29 +61,13 @@ class Player(pygame.sprite.Sprite):
                 self.frame_index = 0
             self.image = self.frames[int(self.frame_index)]
         else:
-            self.frame_index = 0
+            self.frame_index = 1  # Frame de idle
             self.image = self.frames[int(self.frame_index)]
 
     def update(self):
         self.input()
         self.animate()
         self.rect.center += self.direction * self.speed
-
-# class Enemy(pygame.sprite.Sprite):
-#     def __init__(self, pos, group):
-#         super().__init__(group)
-#         self.image = pygame.image.load('assets/personagens/inimigos.png').convert_alpha()
-#         self.rect = self.image.get_rect(center=pos)
-
-#     def update(self, player_rect):
-#         # Verificação de colisão
-#         if self.rect.colliderect(player_rect):
-#             print("Colisão detectada!")
-#             # Exemplo de interação: impedir que o jogador se mova para o inimigo
-#             if player_rect.left < self.rect.right and player_rect.right > self.rect.left:
-#                 player_rect.x = self.rect.right if player_rect.x < self.rect.x else self.rect.left - player_rect.width
-#             if player_rect.top < self.rect.bottom and player_rect.bottom > self.rect.top:
-#                 player_rect.y = self.rect.bottom if player_rect.y < self.rect.y else self.rect.top - player_rect.height
 
 class CameraGroup(pygame.sprite.Group):
     def __init__(self):
@@ -110,7 +92,7 @@ class CameraGroup(pygame.sprite.Group):
         self.ground_rect = self.ground_surf.get_rect(topleft=(0,0))
 
         # camera speed
-        self.keyboard_speed = 8
+        self.keyboard_speed = 12
 
         # zoom 
         self.zoom_scale = 1
@@ -146,7 +128,6 @@ class CameraGroup(pygame.sprite.Group):
 # Setup 
 camera_group = CameraGroup()
 player = Player((640, 360), camera_group)
-# enemy = Enemy((pos_x_enemy, pos_y_enemy), camera_group)
 
 while True:
     for event in pygame.event.get():
