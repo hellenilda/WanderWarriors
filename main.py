@@ -64,7 +64,7 @@ class Player(pygame.sprite.Sprite):
         self.input()
         self.animate()
         self.rect.center += self.direction * self.speed
-
+#
 # class Enemy(pygame.sprite.Sprite):
 #     def __init__(self, pos, group):
 #         super().__init__(group)
