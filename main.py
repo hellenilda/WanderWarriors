@@ -13,10 +13,16 @@ clock = pygame.time.Clock()
 
 # Carregamento das imagens e redimensionamento dos personagens
 cenario = pygame.image.load('assets/cenário.png').convert_alpha()
-wanderley_frames = [
-    pygame.image.load('Sprites /Vander/Baixo/Sprite-baixo-1.png').convert_alpha(),
-    pygame.image.load('Sprites /Vander/Baixo/Sprite-baixo-2.png').convert_alpha(),
-    pygame.image.load('Sprites /Vander/Baixo/Sprite-baixo-3.png').convert_alpha(),
+wanderley_down = [
+    pygame.image.load('Sprites/Vander/Baixo/Sprite-baixo-1.png').convert_alpha(),
+    pygame.image.load('Sprites/Vander/Baixo/Sprite-baixo-2.png').convert_alpha(),
+    pygame.image.load('Sprites/Vander/Baixo/Sprite-baixo-3.png').convert_alpha(),
+]
+
+wanderley_up = [
+    pygame.image.load('Sprites/Vander/Cima/Sprite-cima-1.png').convert_alpha(),
+    pygame.image.load('Sprites/Vander/Cima/Sprite-cima-2.png').convert_alpha(),
+    pygame.image.load('Sprites/Vander/Cima/Sprite-cima-3.png').convert_alpha(),
 ]
 
 # Configurações dos personagens
@@ -25,7 +31,7 @@ wanderley_frames = [
 class Player(pygame.sprite.Sprite):
     def __init__(self, pos, group):
         super().__init__(group)
-        self.frames = wanderley_frames
+        self.frames = wanderley_down
         self.frame_index = 0
         self.image = self.frames[self.frame_index]
         self.rect = self.image.get_rect(center=pos)
