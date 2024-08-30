@@ -12,7 +12,7 @@ pygame.display.set_caption('Wander Warriors')
 clock = pygame.time.Clock()
 
 # Carregamento das imagens e redimensionamento dos personagens
-cenario = pygame.image.load('assets/cenário.png').convert_alpha()
+cenario = pygame.image.load('Sprites/cenário.png').convert_alpha()
 wanderley_down = [
     pygame.image.load('Sprites/Vander/Baixo/Sprite-baixo-1.png').convert_alpha(),
     pygame.image.load('Sprites/Vander/Baixo/Sprite-baixo-2.png').convert_alpha(),  # Idle
