@@ -34,7 +34,7 @@ class Player(pygame.sprite.Sprite):
         self.image = self.frames[self.frame_index]
         self.rect = self.image.get_rect(center=pos)
         self.direction = pygame.math.Vector2()
-        self.speed = 8
+        self.speed = 5
         self.animation_speed = 0.15
 
     def input(self):
@@ -94,8 +94,6 @@ class CameraGroup(pygame.sprite.Group):
         # camera speed
         self.keyboard_speed = 12
 
-        # zoom 
-        self.zoom_scale = 1
         self.internal_surf_size = (2500,2500)
         self.internal_surf = pygame.Surface(self.internal_surf_size, pygame.SRCALPHA)
         self.internal_rect = self.internal_surf.get_rect(center = (self.half_w,self.half_h))
@@ -121,9 +119,7 @@ class CameraGroup(pygame.sprite.Group):
             offset_pos = sprite.rect.topleft - self.offset + self.internal_offset
             self.internal_surf.blit(sprite.image,offset_pos)
 
-        scaled_surf = pygame.transform.scale(self.internal_surf, self.internal_surface_size_vector * self.zoom_scale)
-        scaled_rect = scaled_surf.get_rect(center=(self.half_w,self.half_h))
-        self.display_surface.blit(scaled_surf,scaled_rect)
+        self.display_surface.blit(self.internal_surf, self.internal_rect)
 
 # Setup 
 camera_group = CameraGroup()
@@ -138,8 +134,6 @@ while True:
             if event.key == pygame.K_ESCAPE:
                 pygame.quit()
                 sys.exit()
-        if event.type == pygame.MOUSEWHEEL:
-            camera_group.zoom_scale += event.y * 0.03
 
     screen.fill('#71ddee')
 
