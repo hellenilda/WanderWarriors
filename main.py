@@ -47,6 +47,9 @@ class Player(pygame.sprite.Sprite):
     def input(self):
         keys = pygame.key.get_pressed()
 
+        self.direction.x = 0
+        self.direction.y = 0
+
         if keys[pygame.K_UP]:
             self.direction.y = -1
             self.frames = wanderley_up  # Altera para a animação para cima
