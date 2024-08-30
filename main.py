@@ -25,6 +25,12 @@ wanderley_up = [
     pygame.image.load('Sprites/Vander/Cima/Sprite-cima-3.png').convert_alpha(),
 ]
 
+wanderley_right = [
+    pygame.image.load('Sprites/Vander/Lados/Sprite-lados-1.png').convert_alpha(),
+    pygame.image.load('Sprites/Vander/Lados/Sprite-lados-2.png').convert_alpha(),
+    pygame.image.load('Sprites/Vander/Lados/Sprite-lados-3.png').convert_alpha(),
+]
+
 # Configurações dos personagens
 class Player(pygame.sprite.Sprite):
     def __init__(self, pos, group):
