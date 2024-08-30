@@ -13,6 +13,7 @@ clock = pygame.time.Clock()
 
 # Carregamento das imagens e redimensionamento dos personagens
 cenario = pygame.image.load('Sprites/cenário.png').convert_alpha()
+
 wanderley_down = [
     pygame.image.load('Sprites/Vander/Baixo/Sprite-baixo-1.png').convert_alpha(),
     pygame.image.load('Sprites/Vander/Baixo/Sprite-baixo-2.png').convert_alpha(),  # Idle
@@ -52,6 +53,13 @@ class Player(pygame.sprite.Sprite):
         elif keys[pygame.K_DOWN]:
             self.direction.y = 1
             self.frames = wanderley_down  # Altera para a animação para baixo
+        elif keys[pygame.K_RIGHT]:
+            self.direction.x = 1
+            self.frames = wanderley_right  # Altera para a animação para a direita
+        elif keys[pygame.K_LEFT]:
+            self.direction.x = -1
+            # (frame, True, False) = (surface, Inversão horizontal, Inversão vertical)
+            self.frames = [pygame.transform.flip(frame, True, False) for frame in wanderley_right]
         else:
             self.direction.y = 0
 
