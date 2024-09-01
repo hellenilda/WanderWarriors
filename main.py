@@ -1,26 +1,37 @@
 import pygame
 import sys
 
+# Funções de carregamento e manipulação de imagens
+def load_and_scale_image(path, size):
+    """Carrega uma imagem e a redimensiona para o tamanho especificado."""
+    original_image = pygame.image.load(path).convert_alpha()
+    return pygame.transform.scale(original_image, size)
+
 def bloco_adm(pos, group):
-    """Função para criar um colisor."""
+    """Cria o sprite do bloco administrativo."""
     sprite = pygame.sprite.Sprite(group)
-    original_image = pygame.image.load('Sprites/colisores/bloco-adm.png').convert_alpha()
-    # Redimensiona a imagem para as dimensões desejadas
-    sprite.image = pygame.transform.scale(original_image, (1210, 520))
+    sprite.image = load_and_scale_image('Sprites/colisores/bloco-adm.png', (1210, 520))
     sprite.rect = sprite.image.get_rect(topleft=pos)
     return sprite
 
 def rampa(pos, group):
-    """Função para criar um colisor."""
+    """Cria o sprite da rampa."""
     sprite = pygame.sprite.Sprite(group)
-    original_image = pygame.image.load('Sprites/colisores/rampa.png').convert_alpha()
+    sprite.image = load_and_scale_image('Sprites/colisores/rampa.png', (390, 372))
+    sprite.rect = sprite.image.get_rect(topleft=pos)
+    return sprite
+
+def estacionamento(pos, group):
+    """Cria o sprite do estacionamento."""
+    sprite = pygame.sprite.Sprite(group)
+    original_image = pygame.image.load('Sprites/colisores/estacionamento.png').convert_alpha()
     # Redimensiona a imagem para as dimensões desejadas
-    sprite.image = pygame.transform.scale(original_image, (390, 372))
+    sprite.image = pygame.transform.scale(original_image, (378, 257))
     sprite.rect = sprite.image.get_rect(topleft=pos)
     return sprite
 
 def create_player(pos, group, obstacle_sprites):
-    """Função para criar o jogador."""
+    """Cria o jogador e configura suas propriedades iniciais."""
     sprite = pygame.sprite.Sprite(group)
     sprite.frames = wanderley_down
     sprite.frame_index = 0
@@ -33,100 +44,87 @@ def create_player(pos, group, obstacle_sprites):
     return sprite
 
 def player_input(player):
-    """Função para tratar a entrada do jogador."""
+    """Processa a entrada do jogador e altera sua direção e animação."""
     keys = pygame.key.get_pressed()
-
     player.direction.x = 0
     player.direction.y = 0
 
     if keys[pygame.K_UP]:
         player.direction.y = -1
-        player.frames = wanderley_up  # Altera para a animação para cima
+        player.frames = wanderley_up
     elif keys[pygame.K_DOWN]:
         player.direction.y = 1
-        player.frames = wanderley_down  # Altera para a animação para baixo
+        player.frames = wanderley_down
     elif keys[pygame.K_RIGHT]:
         player.direction.x = 1
-        player.frames = wanderley_right  # Altera para a animação para a direita
+        player.frames = wanderley_right
     elif keys[pygame.K_LEFT]:
         player.direction.x = -1
         player.frames = [pygame.transform.flip(frame, True, False) for frame in wanderley_right]
-    else:
-        player.direction.y = 0
 
 def animate_player(player):
-    """Função para animar o jogador."""
+    """Anima o jogador com base em sua direção."""
     if player.direction.magnitude() != 0:
         player.frame_index += player.animation_speed
         if player.frame_index >= len(player.frames):
             player.frame_index = 0
         player.image = player.frames[int(player.frame_index)]
     else:
-        player.frame_index = 1  # Frame de idle
+        player.frame_index = 1
         player.image = player.frames[int(player.frame_index)]
 
 def move_player(player, speed):
-    """Função para mover o jogador."""
+    """Move o jogador e verifica colisões."""
     if player.direction.magnitude() != 0:
         player.direction = player.direction.normalize()
 
-    # Movimento horizontal
     player.rect.x += player.direction.x * speed
     check_collision(player, 'horizontal')
 
-    # Movimento vertical
     player.rect.y += player.direction.y * speed
     check_collision(player, 'vertical')
 
 def check_collision(player, direction):
-    """Função para verificar colisão do jogador com obstáculos."""
+    """Verifica colisão do jogador com os obstáculos."""
     if direction == 'horizontal':
         for sprite in player.obstacle_sprites:
             if sprite.rect.colliderect(player.rect):
-                if player.direction.x > 0:  # Indo para a direita
+                if player.direction.x > 0:
                     player.rect.right = sprite.rect.left
-                if player.direction.x < 0:  # Indo para a esquerda
+                if player.direction.x < 0:
                     player.rect.left = sprite.rect.right
-
     if direction == 'vertical':
         for sprite in player.obstacle_sprites:
             if sprite.rect.colliderect(player.rect):
-                if player.direction.y > 0:  # Indo para baixo
+                if player.direction.y > 0:
                     player.rect.bottom = sprite.rect.top
-                if player.direction.y < 0:  # Indo para cima
+                if player.direction.y < 0:
                     player.rect.top = sprite.rect.bottom
 
 def update_player(player):
-    """Função para atualizar o estado do jogador."""
+    """Atualiza o estado do jogador a cada quadro."""
     player_input(player)
     animate_player(player)
     move_player(player, player.speed)
-
     print(f'Posição do player: {player.rect.center}')
 
 def create_camera_group():
-    """Função para criar o grupo da câmera."""
+    """Cria o grupo de câmera e configura a superfície de exibição."""
     group = pygame.sprite.Group()
     group.display_surface = pygame.display.get_surface()
-
-    # camera offset 
     group.offset = pygame.math.Vector2()
     group.half_w = group.display_surface.get_size()[0] // 2
     group.half_h = group.display_surface.get_size()[1] // 2
-
-    # box setup
     group.camera_borders = {'left': 200, 'right': 200, 'top': 100, 'bottom': 100}
+    
     l = group.camera_borders['left']
     t = group.camera_borders['top']
     w = group.display_surface.get_size()[0] - (group.camera_borders['left'] + group.camera_borders['right'])
     h = group.display_surface.get_size()[1] - (group.camera_borders['top'] + group.camera_borders['bottom'])
     group.camera_rect = pygame.Rect(l, t, w, h)
 
-    # ground
     group.ground_surf = cenario
     group.ground_rect = group.ground_surf.get_rect(topleft=(0, 0))
-
-    # camera speed
     group.keyboard_speed = 12
 
     group.internal_surf_size = (2500, 2500)
@@ -140,90 +138,99 @@ def create_camera_group():
     return group
 
 def center_target_camera(camera_group, target):
-    """Função para centralizar a câmera no jogador."""
+    """Centraliza a câmera no alvo (player)."""
     camera_group.offset.x = target.rect.centerx - camera_group.half_w
     camera_group.offset.y = target.rect.centery - camera_group.half_h
 
 def custom_draw(camera_group, player):
-    """Função para desenhar os elementos na tela usando a câmera."""
+    """Desenha os elementos na tela usando a câmera."""
     center_target_camera(camera_group, player)
     camera_group.internal_surf.fill('#71ddee')
 
-    # ground 
     ground_offset = camera_group.ground_rect.topleft - camera_group.offset + camera_group.internal_offset
     camera_group.internal_surf.blit(camera_group.ground_surf, ground_offset)
 
-    # active elements
     for sprite in sorted(camera_group.sprites(), key=lambda sprite: sprite.rect.centery):
         offset_pos = sprite.rect.topleft - camera_group.offset + camera_group.internal_offset
         camera_group.internal_surf.blit(sprite.image, offset_pos)
 
     camera_group.display_surface.blit(camera_group.internal_surf, camera_group.internal_rect)
 
-# Inicialização do pygame
-pygame.init()
+def main():
+    """Função principal do jogo."""
+    # Inicialização do pygame
+    pygame.init()
 
-# Configurações da tela
-largura = 1280
-altura = 720
-screen = pygame.display.set_mode((largura, altura))
-pygame.display.set_caption('Wander Warriors')
-clock = pygame.time.Clock()
+    # Configurações da tela
+    largura, altura = 1280, 720
+    screen = pygame.display.set_mode((largura, altura))
+    pygame.display.set_caption('Wander Warriors')
+    clock = pygame.time.Clock()
 
-# Carregamento das imagens e redimensionamento dos personagens
-cenario = pygame.image.load('Sprites/ifpb.jpg').convert_alpha()
+    # Carregamento das imagens e redimensionamento dos personagens
+    global cenario, wanderley_down, wanderley_up, wanderley_right
+    cenario = pygame.image.load('Sprites/ifpb.jpg').convert_alpha()
 
-wanderley_down = [
-    pygame.image.load('Sprites/personagens/Vander/Baixo/Sprite-baixo-1.png').convert_alpha(),
-    pygame.image.load('Sprites/personagens/Vander/Baixo/Sprite-baixo-2.png').convert_alpha(),  # Idle
-    pygame.image.load('Sprites/personagens/Vander/Baixo/Sprite-baixo-3.png').convert_alpha(),
-]
+    wanderley_down = [
+        pygame.image.load('Sprites/personagens/Vander/Baixo/Sprite-baixo-1.png').convert_alpha(),
+        pygame.image.load('Sprites/personagens/Vander/Baixo/Sprite-baixo-2.png').convert_alpha(),
+        pygame.image.load('Sprites/personagens/Vander/Baixo/Sprite-baixo-3.png').convert_alpha(),
+    ]
 
-wanderley_up = [
-    pygame.image.load('Sprites/personagens/Vander/Cima/Sprite-cima-1.png').convert_alpha(),
-    pygame.image.load('Sprites/personagens/Vander/Cima/Sprite-cima-2.png').convert_alpha(),
-    pygame.image.load('Sprites/personagens/Vander/Cima/Sprite-cima-3.png').convert_alpha(),
-]
+    wanderley_up = [
+        pygame.image.load('Sprites/personagens/Vander/Cima/Sprite-cima-1.png').convert_alpha(),
+        pygame.image.load('Sprites/personagens/Vander/Cima/Sprite-cima-2.png').convert_alpha(),
+        pygame.image.load('Sprites/personagens/Vander/Cima/Sprite-cima-3.png').convert_alpha(),
+    ]
 
-wanderley_right = [
-    pygame.image.load('Sprites/personagens/Vander/Lados/Sprite-lados-1.png').convert_alpha(),
-    pygame.image.load('Sprites/personagens/Vander/Lados/Sprite-lados-2.png').convert_alpha(),
-    pygame.image.load('Sprites/personagens/Vander/Lados/Sprite-lados-3.png').convert_alpha(),
-]
+    wanderley_right = [
+        pygame.image.load('Sprites/personagens/Vander/Lados/Sprite-lados-1.png').convert_alpha(),
+        pygame.image.load('Sprites/personagens/Vander/Lados/Sprite-lados-2.png').convert_alpha(),
+        pygame.image.load('Sprites/personagens/Vander/Lados/Sprite-lados-3.png').convert_alpha(),
+    ]
 
-# Setup 
-camera_group = create_camera_group()
+    # Setup 
+    camera_group = create_camera_group()
 
-# Criação de um grupo de obstáculos
-obstacle_sprites = pygame.sprite.Group()
+    # Criação de um grupo de obstáculos
+    obstacle_sprites = pygame.sprite.Group()
 
-# Player adicionado ao grupo de obstáculos
-player = create_player((1205, 955), camera_group, obstacle_sprites)
+    # Player adicionado ao grupo de obstáculos
+    player = create_player((1205, 955), camera_group, obstacle_sprites)
 
-# Criação de uma única árvore na posição (1345, 880)
-blocoAdm = bloco_adm((0, 0), camera_group)
-obstacle_sprites.add(blocoAdm)  # Adiciona a árvore ao grupo de obstáculos
+    # Criação de obstáculos
+    blocoAdm = bloco_adm((0, 0), camera_group)
+    obstacle_sprites.add(blocoAdm)
 
-rampa = rampa((1210, 0), camera_group)
-obstacle_sprites.add(rampa)
+    # Criação do sprite do estacionamento
+    estacionamento_sprite = estacionamento((130, 785), camera_group)
+    obstacle_sprites.add(estacionamento_sprite)
 
-while True:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit()
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_ESCAPE:
+    # Criação da rampa
+    rampa_sprite = rampa((1210, 0), camera_group)
+    obstacle_sprites.add(rampa_sprite)
+
+    # Loop principal do jogo
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    pygame.quit()
+                    sys.exit()
 
-    screen.fill('#71ddee')
+        screen.fill('#71ddee')  # Cor de fundo da tela
 
-    # Atualiza o grupo de sprites
-    update_player(player)
+        # Atualiza o grupo de sprites
+        update_player(player)
 
-    # Desenho do grupo de câmera
-    custom_draw(camera_group, player)
+        # Desenho do grupo de câmera (inclui todos os sprites, incluindo o estacionamento)
+        custom_draw(camera_group, player)
 
-    pygame.display.update()
-    clock.tick(60)
+        pygame.display.update()
+        clock.tick(60)
+
+if __name__ == "__main__":
+    main()
