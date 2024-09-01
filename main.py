@@ -42,6 +42,27 @@ def arbusto_estacionamento(pos, group):
     sprite.rect = sprite.image.get_rect(topleft=pos)
     return sprite
 
+def grupo_lampadas(pos, group):
+    """Cria o sprite do arbusto no estacionamento."""
+    sprite = pygame.sprite.Sprite(group)
+    sprite.image = load_and_scale_image('Sprites/colisores/lampada-1.png', (45, 228))
+    sprite.rect = sprite.image.get_rect(topleft=pos)
+    return sprite
+
+def lampada(pos, group):
+    """Cria o sprite do arbusto no estacionamento."""
+    sprite = pygame.sprite.Sprite(group)
+    sprite.image = load_and_scale_image('Sprites/colisores/lampada-2.png', (24, 95))
+    sprite.rect = sprite.image.get_rect(topleft=pos)
+    return sprite
+
+def arvore(pos, group):
+    """Cria o sprite da árvore."""
+    sprite = pygame.sprite.Sprite(group)
+    sprite.image = load_and_scale_image('Sprites/colisores/arvore.png', (97,101))
+    sprite.rect = sprite.image.get_rect(topleft=pos)
+    return sprite
+
 def check_boundary(player, scenario_rect):
     """Limita o movimento do jogador dentro dos limites do cenário."""
     if player.rect.left < scenario_rect.left:
@@ -254,6 +275,19 @@ def main():
     frente_sprite = frente((-12, 936), camera_group)
     obstacle_sprites.add(frente_sprite)
 
+    grupo_lampadas_sprite = grupo_lampadas((1545, 418), camera_group)
+    obstacle_sprites.add(grupo_lampadas_sprite)
+
+    lampada_sprite_1 = lampada((1335, 605), camera_group)
+    obstacle_sprites.add(lampada_sprite_1)
+
+    lampada_sprite_2 = lampada((1090, 790), camera_group)
+    obstacle_sprites.add(lampada_sprite_2)
+
+    # Criação da árvore
+    arvore_sprite = arvore((1292, 799), camera_group)
+    # Não adicionar ao grupo de obstáculos
+
     # Criação da rampa
     rampa_sprite = rampa((1210, 0), camera_group)
     obstacle_sprites.add(rampa_sprite)
@@ -274,7 +308,7 @@ def main():
         # Atualiza o grupo de sprites
         update_player(player, scenario_rect)
 
-        # Desenho do grupo de câmera (inclui todos os sprites, incluindo o estacionamento)
+        # Desenho do grupo de câmera (inclui todos os sprites, incluindo a árvore)
         custom_draw(camera_group, player)
 
         pygame.display.update()
