@@ -24,11 +24,34 @@ def rampa(pos, group):
 def estacionamento(pos, group):
     """Cria o sprite do estacionamento."""
     sprite = pygame.sprite.Sprite(group)
-    original_image = pygame.image.load('Sprites/colisores/estacionamento.png').convert_alpha()
-    # Redimensiona a imagem para as dimensões desejadas
-    sprite.image = pygame.transform.scale(original_image, (378, 257))
+    sprite.image = load_and_scale_image('Sprites/colisores/estacionamento.png', (378, 257))
     sprite.rect = sprite.image.get_rect(topleft=pos)
     return sprite
+
+def frente(pos, group):
+    """Cria o sprite da frente."""
+    sprite = pygame.sprite.Sprite(group)
+    sprite.image = load_and_scale_image('Sprites/colisores/frente.png', (1605, 500))
+    sprite.rect = sprite.image.get_rect(topleft=pos)
+    return sprite
+
+def arbusto_estacionamento(pos, group):
+    """Cria o sprite do arbusto no estacionamento."""
+    sprite = pygame.sprite.Sprite(group)
+    sprite.image = load_and_scale_image('Sprites/colisores/estacionamento-arbustos.png', (149, 91))
+    sprite.rect = sprite.image.get_rect(topleft=pos)
+    return sprite
+
+def check_boundary(player, scenario_rect):
+    """Limita o movimento do jogador dentro dos limites do cenário."""
+    if player.rect.left < scenario_rect.left:
+        player.rect.left = scenario_rect.left
+    if player.rect.right > scenario_rect.right:
+        player.rect.right = scenario_rect.right
+    if player.rect.top < scenario_rect.top:
+        player.rect.top = scenario_rect.top
+    if player.rect.bottom > scenario_rect.bottom:
+        player.rect.bottom = scenario_rect.bottom
 
 def create_player(pos, group, obstacle_sprites):
     """Cria o jogador e configura suas propriedades iniciais."""
@@ -73,8 +96,8 @@ def animate_player(player):
         player.frame_index = 1
         player.image = player.frames[int(player.frame_index)]
 
-def move_player(player, speed):
-    """Move o jogador e verifica colisões."""
+def move_player(player, speed, scenario_rect):
+    """Move o jogador e verifica colisões e limites."""
     if player.direction.magnitude() != 0:
         player.direction = player.direction.normalize()
 
@@ -83,6 +106,8 @@ def move_player(player, speed):
 
     player.rect.y += player.direction.y * speed
     check_collision(player, 'vertical')
+
+    check_boundary(player, scenario_rect)
 
 def check_collision(player, direction):
     """Verifica colisão do jogador com os obstáculos."""
@@ -101,14 +126,14 @@ def check_collision(player, direction):
                 if player.direction.y < 0:
                     player.rect.top = sprite.rect.bottom
 
-def update_player(player):
+def update_player(player, scenario_rect):
     """Atualiza o estado do jogador a cada quadro."""
     player_input(player)
     animate_player(player)
-    move_player(player, player.speed)
+    move_player(player, player.speed, scenario_rect)
     print(f'Posição do player: {player.rect.center}')
 
-def create_camera_group():
+def create_camera_group(scenario_rect):
     """Cria o grupo de câmera e configura a superfície de exibição."""
     group = pygame.sprite.Group()
     group.display_surface = pygame.display.get_surface()
@@ -135,12 +160,26 @@ def create_camera_group():
     group.internal_offset.x = group.internal_surf_size[0] // 2 - group.half_w
     group.internal_offset.y = group.internal_surf_size[1] // 2 - group.half_h
 
+    # Definir limites da câmera com base no tamanho do cenário
+    group.max_x = scenario_rect.width - group.display_surface.get_width()
+    group.max_y = scenario_rect.height - group.display_surface.get_height()
+    
     return group
 
 def center_target_camera(camera_group, target):
-    """Centraliza a câmera no alvo (player)."""
+    """Centraliza a câmera no alvo (player) e limita a visualização dentro dos limites do cenário."""
     camera_group.offset.x = target.rect.centerx - camera_group.half_w
     camera_group.offset.y = target.rect.centery - camera_group.half_h
+
+    # Limita a posição da câmera para que ela não saia dos limites do cenário
+    if camera_group.offset.x < 0:
+        camera_group.offset.x = 0
+    if camera_group.offset.x > camera_group.max_x:
+        camera_group.offset.x = camera_group.max_x
+    if camera_group.offset.y < 0:
+        camera_group.offset.y = 0
+    if camera_group.offset.y > camera_group.max_y:
+        camera_group.offset.y = camera_group.max_y
 
 def custom_draw(camera_group, player):
     """Desenha os elementos na tela usando a câmera."""
@@ -189,14 +228,17 @@ def main():
         pygame.image.load('Sprites/personagens/Vander/Lados/Sprite-lados-3.png').convert_alpha(),
     ]
 
+    # Definir o retângulo do cenário
+    scenario_rect = cenario.get_rect()
+
     # Setup 
-    camera_group = create_camera_group()
+    camera_group = create_camera_group(scenario_rect)
 
     # Criação de um grupo de obstáculos
     obstacle_sprites = pygame.sprite.Group()
 
     # Player adicionado ao grupo de obstáculos
-    player = create_player((1205, 955), camera_group, obstacle_sprites)
+    player = create_player((1332, 755), camera_group, obstacle_sprites)
 
     # Criação de obstáculos
     blocoAdm = bloco_adm((0, 0), camera_group)
@@ -205,6 +247,12 @@ def main():
     # Criação do sprite do estacionamento
     estacionamento_sprite = estacionamento((130, 785), camera_group)
     obstacle_sprites.add(estacionamento_sprite)
+
+    arbusto_estacionamento_sprite = arbusto_estacionamento((512, 768), camera_group)
+    obstacle_sprites.add(arbusto_estacionamento_sprite)
+
+    frente_sprite = frente((-12, 936), camera_group)
+    obstacle_sprites.add(frente_sprite)
 
     # Criação da rampa
     rampa_sprite = rampa((1210, 0), camera_group)
@@ -224,7 +272,7 @@ def main():
         screen.fill('#71ddee')  # Cor de fundo da tela
 
         # Atualiza o grupo de sprites
-        update_player(player)
+        update_player(player, scenario_rect)
 
         # Desenho do grupo de câmera (inclui todos os sprites, incluindo o estacionamento)
         custom_draw(camera_group, player)
