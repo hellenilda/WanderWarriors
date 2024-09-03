@@ -17,17 +17,14 @@ def load_and_scale_image(path, size):
 def load_animation_frames(base_path, frame_count, size):
     return [load_and_scale_image(f"{base_path}{i}.png", size) for i in range(1, frame_count + 1)]
 
-# Função para desenhar a caixa de texto
-def draw_text_box(surface, text, position, width, height):
-    font = pygame.font.Font(None, 36)
-    text_surf = font.render(text, True, pygame.Color('white'))
-    text_rect = text_surf.get_rect(center=position)
-    box_rect = pygame.Rect(0, 0, width, height)
-    box_rect.center = position
+# Função para carregar balões de fala
+def load_speech_bubbles(count, size):
+    return [load_and_scale_image(f'Sprites/dialogo/{i}.png', size) for i in range(1, count + 1)]
 
-    pygame.draw.rect(surface, pygame.Color('black'), box_rect)
-    pygame.draw.rect(surface, pygame.Color('white'), box_rect, 2)
-    surface.blit(text_surf, text_rect)
+# Função para desenhar a caixa de texto
+def draw_speech_bubble(surface, bubble_image, screen_width):
+    bubble_rect = bubble_image.get_rect(midbottom=(screen_width // 2, surface.get_height() - 10))
+    surface.blit(bubble_image, bubble_rect)
 
 # Função para criar um sprite
 def create_sprite(image_path, pos, group, size=None):
@@ -114,7 +111,7 @@ def create_camera_group(scenario_rect, cenario):
 
     l, t = group.camera_borders['left'], group.camera_borders['top']
     w, h = group.display_surface.get_size()
-    w -= group.camera_borders['left'] +     group.camera_borders['right']
+    w -= group.camera_borders['left'] + group.camera_borders['right']
     h -= group.camera_borders['top'] + group.camera_borders['bottom']
     group.camera_rect = pygame.Rect(l, t, w, h)
 
@@ -158,11 +155,19 @@ def main():
     pygame.init()
     screen, clock = initialize_screen()
 
+    # Carrega e inicia a reprodução da música de fundo
+    pygame.mixer.music.load('Músicas/22 - Dream.ogg')
+    pygame.mixer.music.play(-1)
+
     # Carregar o cenário e as animações
     cenario = pygame.image.load('Sprites/ifpb.jpg').convert_alpha()
     wanderley_down = load_animation_frames('Sprites/personagens/Vander/Baixo/Sprite-baixo-', 3, (64, 64))
     wanderley_up = load_animation_frames('Sprites/personagens/Vander/Cima/Sprite-cima-', 3, (64, 64))
     wanderley_right = load_animation_frames('Sprites/personagens/Vander/Lados/Sprite-lados-', 3, (64, 64))
+
+    # Carregar balões de fala
+    bubble_size = (564, 350)  # Tamanho original dos balões de fala
+    speech_bubbles = load_speech_bubbles(7, bubble_size)  # Ajuste o número de balões de fala
 
     scenario_rect = cenario.get_rect()
     camera_group = create_camera_group(scenario_rect, cenario)
@@ -205,26 +210,47 @@ def main():
     text_box_height = 100
     npc_interaction_text = "Olá! Sou um NPC interativo."
 
+    current_bubble_index = 0
+    bubble_displayed = False  # Para controlar a exibição do balão
+    interaction_npc = None  # Para saber qual NPC está sendo interagido
+
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-            print(f'Posição do jogador: {player.rect.topleft}')
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_e and interaction_npc:
+                    if bubble_displayed:
+                        # Avançar para o próximo balão
+                        current_bubble_index = (current_bubble_index + 1) % len(speech_bubbles)
+                        if current_bubble_index == 0:
+                            bubble_displayed = False  # Ocultar o balão após o último
+                    else:
+                        bubble_displayed = True  # Mostrar o balão
 
         # Atualizar entrada do jogador e movimento
         update_player_input(player, wanderley_up, wanderley_down, wanderley_right)
         move_player(player, player.speed, scenario_rect)
         animate_player(player)
 
+        # Verificar interação com NPCs
+        interaction_npc = None
+        for npc in npcs:
+            if player.rect.colliderect(npc.rect):
+                interaction_npc = npc
+                break
+
+        # Desenhar a tela de fundo
+        screen.fill((0, 0, 0))
+
         # Desenhar elementos na tela
         custom_draw(camera_group, player)
 
-        # Verificar interação com NPCs
-        for npc in npcs:
-            if player.rect.colliderect(npc.rect):
-                draw_text_box(screen, npc_interaction_text, (640, 100), text_box_width, text_box_height)
-        
+        # Desenhar o balão de fala se estiver ativo
+        if bubble_displayed and interaction_npc:
+            draw_speech_bubble(screen, speech_bubbles[current_bubble_index], screen.get_width())
+
         pygame.display.update()
         clock.tick(60)
 
