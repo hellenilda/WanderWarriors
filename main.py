@@ -214,6 +214,8 @@ def main():
     ativar_balao = False
     interacao_npc = None  # Armazenar o nome do NPC interagido
 
+    som_tocado = False 
+
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -230,9 +232,10 @@ def main():
                         indice_atual_balao = (indice_atual_balao + 1) % len(baloes_fala[nome_npc])
                         if indice_atual_balao == 0:
                             ativar_balao = False  # Ocultar o balão após o último
-                        if nome_npc == 'Isac':
+                        if nome_npc == 'Isac' and indice_atual_balao == len(baloes_fala[nome_npc]) - 2 and not som_tocado:
                             kiki.play()
-                            
+                            som_tocado = True  # Marcar que o som foi tocado
+
                     else:
                         ativar_balao = True  # Mostrar o balão
 
