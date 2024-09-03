@@ -76,6 +76,19 @@ def player_input(player, wanderley_up, wanderley_down, wanderley_right):
         player.direction.x = -1
         player.frames = [pygame.transform.flip(frame, True, False) for frame in wanderley_right]
 
+    elif keys[pygame.K_w]:
+        player.direction.y = -1
+        player.frames = wanderley_up
+    elif keys[pygame.K_s]:
+        player.direction.y = 1
+        player.frames = wanderley_down
+    elif keys[pygame.K_d]:
+        player.direction.x = 1
+        player.frames = wanderley_right
+    elif keys[pygame.K_a]:
+        player.direction.x = -1
+        player.frames = [pygame.transform.flip(frame, True, False) for frame in wanderley_right]
+
 # Função para animar o jogador
 def animate_player(player):
     if player.direction.length() > 0:
