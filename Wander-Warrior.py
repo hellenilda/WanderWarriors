@@ -1,160 +1,29 @@
 import pygame
 import sys
 
-# Inicialização do pygame
-pygame.init()
 
-# Configurações da tela
-largura = 1600
-altura = 1402
-screen = pygame.display.set_mode((largura, altura))
-pygame.display.set_caption('Wander Warriors')
-clock = pygame.time.Clock()
-
-# Carregamento das imagens e redimensionamento dos personagens
-cenario = pygame.image.load('C:/Wander-Warriors/Cenário/ifpb.jpg').convert_alpha()
-
-wanderley_down = [
-    pygame.image.load('C:/Wander-Warriors/Sprites/Wander/Baixo/Sprite-baixo-1.png').convert_alpha(),
-    pygame.image.load('C:/Wander-Warriors/Sprites/Wander/Baixo/Sprite-baixo-2.png').convert_alpha(),  # Idle
-    pygame.image.load('C:/Wander-Warriors/Sprites/Wander/Baixo/Sprite-baixo-3.png').convert_alpha(),
-]
-
-wanderley_up = [
-    pygame.image.load('C:/Wander-Warriors/Sprites/Wander/Cima/Sprite-cima-1.png').convert_alpha(),
-    pygame.image.load('C:/Wander-Warriors/Sprites/Wander/Cima/Sprite-cima-2.png').convert_alpha(),
-    pygame.image.load('C:/Wander-Warriors/Sprites/Wander/Cima/Sprite-cima-3.png').convert_alpha(),
-]
-
-wanderley_right = [
-    pygame.image.load('C:/Wander-Warriors/Sprites/Wander/Lados/Sprite-lados-1.png').convert_alpha(),
-    pygame.image.load('C:/Wander-Warriors/Sprites/Wander/Lados/Sprite-lados-2.png').convert_alpha(),
-    pygame.image.load('C:/Wander-Warriors/Sprites/Wander/Lados/Sprite-lados-3.png').convert_alpha(),
-]
-
-# Carregar as imagens dos NPCs
-npc1_image = pygame.image.load('C:/Wander-Warriors/Sprites/NPCs/Hell/Hellen.png').convert_alpha()
-npc2_image = pygame.image.load('C:/Wander-Warriors/Sprites/NPCs/Isac/Isac.png').convert_alpha()
-npc3_image = pygame.image.load('C:/Wander-Warriors/Sprites/NPCs/Mat/Mateus.png').convert_alpha()
+# Função para inicialização da tela
+def initialize_screen():
+    largura, altura = 1280, 720
+    screen = pygame.display.set_mode((largura, altura))
+    pygame.display.set_caption('Wander Warriors')
+    clock = pygame.time.Clock()
+    return screen, clock
 
 
-# Classe NPC
-class NPC(pygame.sprite.Sprite):
-    def __init__(self, image, pos, group):
-        super().__init__(group)
-        self.image = image
-        self.rect = self.image.get_rect(center=pos)
+# Função para carregar e redimensionar imagens
+def load_and_scale_image(path, size):
+    return pygame.transform.scale(pygame.image.load(path).convert_alpha(), size)
 
 
-# Classe Player
-class Player(pygame.sprite.Sprite):
-    def __init__(self, pos, group):
-        super().__init__(group)
-        self.frames = wanderley_down
-        self.frame_index = 0
-        self.image = self.frames[self.frame_index]
-        self.rect = self.image.get_rect(center=pos)
-        self.direction = pygame.math.Vector2()
-        self.speed = 5
-        self.animation_speed = 0.15
-
-    def input(self):
-        keys = pygame.key.get_pressed()
-
-        if keys[pygame.K_UP]:
-            self.direction.y = -1
-            self.frames = wanderley_up  # Altera para a animação para cima
-        elif keys[pygame.K_DOWN]:
-            self.direction.y = 1
-            self.frames = wanderley_down  # Altera para a animação para baixo
-        elif keys[pygame.K_RIGHT]:
-            self.direction.x = 1
-            self.frames = wanderley_right  # Altera para a animação para a direita
-        elif keys[pygame.K_LEFT]:
-            self.direction.x = -1
-            self.frames = [pygame.transform.flip(frame, True, False) for frame in wanderley_right]
-        else:
-            self.direction.y = 0
-
-        if keys[pygame.K_RIGHT]:
-            self.direction.x = 1
-        elif keys[pygame.K_LEFT]:
-            self.direction.x = -1
-        else:
-            self.direction.x = 0
-
-    def animate(self):
-        if self.direction.magnitude() != 0:
-            self.frame_index += self.animation_speed
-            if self.frame_index >= len(self.frames):
-                self.frame_index = 0
-            self.image = self.frames[int(self.frame_index)]
-        else:
-            self.frame_index = 1  # Frame de idle
-            self.image = self.frames[int(self.frame_index)]
-
-    def update(self):
-        self.input()
-        self.animate()
-        self.rect.center += self.direction * self.speed
-
-
-class CameraGroup(pygame.sprite.Group):
-    def __init__(self):
-        super().__init__()
-        self.display_surface = pygame.display.get_surface()
-
-        # camera offset
-        self.offset = pygame.math.Vector2()
-        self.half_w = self.display_surface.get_size()[0] // 2
-        self.half_h = self.display_surface.get_size()[1] // 2
-
-        # box setup
-        self.camera_borders = {'left': 200, 'right': 200, 'top': 100, 'bottom': 100}
-        l = self.camera_borders['left']
-        t = self.camera_borders['top']
-        w = self.display_surface.get_size()[0] - (self.camera_borders['left'] + self.camera_borders['right'])
-        h = self.display_surface.get_size()[1] - (self.camera_borders['top'] + self.camera_borders['bottom'])
-        self.camera_rect = pygame.Rect(l, t, w, h)
-
-        # ground
-        self.ground_surf = cenario
-        self.ground_rect = self.ground_surf.get_rect(topleft=(0, 0))
-
-        # camera speed
-        self.keyboard_speed = 12
-
-        self.internal_surf_size = (2500, 2500)
-        self.internal_surf = pygame.Surface(self.internal_surf_size, pygame.SRCALPHA)
-        self.internal_rect = self.internal_surf.get_rect(center=(self.half_w, self.half_h))
-        self.internal_surface_size_vector = pygame.math.Vector2(self.internal_surf_size)
-        self.internal_offset = pygame.math.Vector2()
-        self.internal_offset.x = self.internal_surf_size[0] // 2 - self.half_w
-        self.internal_offset.y = self.internal_surf_size[1] // 2 - self.half_h
-
-    def center_target_camera(self, target):
-        self.offset.x = target.rect.centerx - self.half_w
-        self.offset.y = target.rect.centery - self.half_h
-
-    def custom_draw(self, player):
-        self.center_target_camera(player)
-        self.internal_surf.fill('#71ddee')
-
-        # ground
-        ground_offset = self.ground_rect.topleft - self.offset + self.internal_offset
-        self.internal_surf.blit(self.ground_surf, ground_offset)
-
-        # active elements
-        for sprite in sorted(self.sprites(), key=lambda sprite: sprite.rect.centery):
-            offset_pos = sprite.rect.topleft - self.offset + self.internal_offset
-            self.internal_surf.blit(sprite.image, offset_pos)
-
-        self.display_surface.blit(self.internal_surf, self.internal_rect)
+# Função para carregar sprites de animação
+def load_animation_frames(base_path, frame_count, size):
+    return [load_and_scale_image(f"{base_path}{i}.png", size) for i in range(1, frame_count + 1)]
 
 
 # Função para desenhar a caixa de texto
 def draw_text_box(surface, text, position, width, height):
-    font = pygame.font.Font(None, 36)  # Escolha a fonte e o tamanho
+    font = pygame.font.Font(None, 36)
     text_surf = font.render(text, True, pygame.Color('white'))
     text_rect = text_surf.get_rect(center=position)
 
@@ -169,52 +38,222 @@ def draw_text_box(surface, text, position, width, height):
     surface.blit(text_surf, text_rect)
 
 
-# Setup
-camera_group = CameraGroup()
-player = Player((1400, 200), camera_group)
+# Função para criar sprite
+def create_sprite(image_path, pos, group, size=None):
+    sprite = pygame.sprite.Sprite(group)
+    sprite.image = load_and_scale_image(image_path, size) if size else pygame.image.load(image_path).convert_alpha()
+    sprite.rect = sprite.image.get_rect(topleft=pos)
+    return sprite
 
-# Instanciar os NPCs
-npc1 = NPC(npc1_image, (1420, 550), camera_group)
-npc2 = NPC(npc2_image, (100, 550), camera_group)
-npc3 = NPC(npc3_image, (1320, 1120), camera_group)
 
-while True:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit()
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_ESCAPE:
+# Função para verificar colisões de limite
+def check_boundary(player, scenario_rect):
+    player.rect.clamp_ip(scenario_rect)
+
+
+# Função para criar o jogador
+def create_player(pos, group, obstacle_sprites, frames):
+    player = pygame.sprite.Sprite(group)
+    player.frames = frames
+    player.frame_index = 0
+    player.image = player.frames[player.frame_index]
+    player.rect = player.image.get_rect(center=pos)
+    player.direction = pygame.math.Vector2()
+    player.speed = 5
+    player.animation_speed = 0.15
+    player.obstacle_sprites = obstacle_sprites
+    return player
+
+
+# Função para entrada de movimento do jogador
+def player_input(player, wanderley_up, wanderley_down, wanderley_right):
+    keys = pygame.key.get_pressed()
+    player.direction.x = 0
+    player.direction.y = 0
+
+    if keys[pygame.K_UP]:
+        player.direction.y = -1
+        player.frames = wanderley_up
+    elif keys[pygame.K_DOWN]:
+        player.direction.y = 1
+        player.frames = wanderley_down
+    elif keys[pygame.K_RIGHT]:
+        player.direction.x = 1
+        player.frames = wanderley_right
+    elif keys[pygame.K_LEFT]:
+        player.direction.x = -1
+        player.frames = [pygame.transform.flip(frame, True, False) for frame in wanderley_right]
+
+    elif keys[pygame.K_w]:
+        player.direction.y = -1
+        player.frames = wanderley_up
+    elif keys[pygame.K_s]:
+        player.direction.y = 1
+        player.frames = wanderley_down
+    elif keys[pygame.K_d]:
+        player.direction.x = 1
+        player.frames = wanderley_right
+    elif keys[pygame.K_a]:
+        player.direction.x = -1
+        player.frames = [pygame.transform.flip(frame, True, False) for frame in wanderley_right]
+
+
+# Função para animar o jogador
+def animate_player(player):
+    if player.direction.length() > 0:
+        player.frame_index += player.animation_speed
+        if player.frame_index >= len(player.frames):
+            player.frame_index = 0
+    else:
+        player.frame_index = 1  # Frame de idle
+    player.image = player.frames[int(player.frame_index)]
+
+
+# Função para mover o jogador
+def move_player(player, speed, scenario_rect):
+    player.rect.x += player.direction.x * speed
+    check_collision(player, 'horizontal')
+    player.rect.y += player.direction.y * speed
+    check_collision(player, 'vertical')
+    check_boundary(player, scenario_rect)
+
+
+# Função para verificar colisão com obstáculos
+def check_collision(player, direction):
+    for sprite in player.obstacle_sprites:
+        if sprite.rect.colliderect(player.rect):
+            if direction == 'horizontal':
+                if player.direction.x > 0:  # Movendo para a direita
+                    player.rect.right = sprite.rect.left
+                elif player.direction.x < 0:  # Movendo para a esquerda
+                    player.rect.left = sprite.rect.right
+            elif direction == 'vertical':
+                if player.direction.y > 0:  # Movendo para baixo
+                    player.rect.bottom = sprite.rect.top
+                elif player.direction.y < 0:  # Movendo para cima
+                    player.rect.top = sprite.rect.bottom
+
+
+# Função para criar o grupo da câmera e configurar a superfície de exibição
+def create_camera_group(scenario_rect, cenario):
+    group = pygame.sprite.Group()
+    group.display_surface = pygame.display.get_surface()
+    group.offset = pygame.math.Vector2()
+    group.half_w, group.half_h = [dim // 2 for dim in group.display_surface.get_size()]
+    group.camera_borders = {'left': 200, 'right': 200, 'top': 100, 'bottom': 100}
+
+    l, t = group.camera_borders['left'], group.camera_borders['top']
+    w, h = group.display_surface.get_size()
+    w -= group.camera_borders['left'] + group.camera_borders['right']
+    h -= group.camera_borders['top'] + group.camera_borders['bottom']
+    group.camera_rect = pygame.Rect(l, t, w, h)
+
+    group.ground_surf = cenario
+    group.ground_rect = group.ground_surf.get_rect(topleft=(0, 0))
+
+    group.internal_surf_size = (2500, 2500)
+    group.internal_surf = pygame.Surface(group.internal_surf_size, pygame.SRCALPHA)
+    group.internal_rect = group.internal_surf.get_rect(center=(group.half_w, group.half_h))
+    group.internal_offset = pygame.math.Vector2(
+        group.internal_surf_size[0] // 2 - group.half_w,
+        group.internal_surf_size[1] // 2 - group.half_h
+    )
+
+    group.max_x = scenario_rect.width - group.display_surface.get_width()
+    group.max_y = scenario_rect.height - group.display_surface.get_height()
+
+    return group
+
+
+# Função para centralizar a câmera no alvo (player)
+def center_target_camera(camera_group, target):
+    camera_group.offset.x = min(max(target.rect.centerx - camera_group.half_w, 0), camera_group.max_x)
+    camera_group.offset.y = min(max(target.rect.centery - camera_group.half_h, 0), camera_group.max_y)
+
+
+# Função para desenhar elementos na tela usando a câmera
+def custom_draw(camera_group, player):
+    center_target_camera(camera_group, player)
+    camera_group.internal_surf.fill('#71ddee')
+
+    ground_offset = camera_group.ground_rect.topleft - camera_group.offset + camera_group.internal_offset
+    camera_group.internal_surf.blit(camera_group.ground_surf, ground_offset)
+
+    for sprite in sorted(camera_group.sprites(), key=lambda s: s.rect.centery):
+        offset_pos = sprite.rect.topleft - camera_group.offset + camera_group.internal_offset
+        camera_group.internal_surf.blit(sprite.image, offset_pos)
+
+    camera_group.display_surface.blit(camera_group.internal_surf, camera_group.internal_rect)
+
+
+# Função principal do jogo
+def main():
+    pygame.init()
+    pygame.mixer.init() # Inicializa o mixer para o áudio
+
+    # Carrega e inicia a reprodução da música de fundo
+    pygame.mixer.music.load('C:/Wander-Warriors/Música de fudo/22 - Dream.ogg')
+    pygame.mixer.music.play(-1)
+
+    screen, clock = initialize_screen()
+
+    global cenario, wanderley_down, wanderley_up, wanderley_right
+    cenario = pygame.image.load('C:/Wander-Warriors/Cenário/ifpb.jpg').convert_alpha()
+
+    # Carregar os frames de animação do jogador
+    wanderley_down = load_animation_frames('C:/Wander-Warriors/Sprites/Wander/Baixo/Sprite-baixo-', 3, (64, 64))
+    wanderley_up = load_animation_frames('C:/Wander-Warriors/Sprites/Wander/Cima/Sprite-cima-', 3, (64, 64))
+    wanderley_right = load_animation_frames('C:/Wander-Warriors/Sprites/Wander/Lados/Sprite-lados-', 3, (64, 64))
+
+    scenario_rect = cenario.get_rect()
+    camera_group = create_camera_group(scenario_rect, cenario)
+    obstacle_sprites = pygame.sprite.Group()
+
+    # Criação do jogador
+    player = create_player((1400, 200), camera_group, obstacle_sprites, wanderley_down)
+
+    # Adicionando obstáculos
+    sprites_info = [
+        ('C:/Wander-Warriors/Colisores/bloco-adm.png', (0, 0), (1210, 520)),
+        ('C:/Wander-Warriors/Colisores/estacionamento.png', (130, 785), (378, 257)),
+        # (Adicione mais obstáculos conforme necessário)
+    ]
+
+    for path, pos, size in sprites_info:
+        create_sprite(path, pos, obstacle_sprites, size)
+
+    # Instanciação dos NPCs com os sprites correspondentes
+    npc1 = create_sprite('C:/Wander-Warriors/Sprites/NPCs/Hell/Hellen.png', (1420, 550), camera_group)
+    npc2 = create_sprite('C:/Wander-Warriors/Sprites/NPCs/Isac/Isac.png', (100, 550), camera_group)
+    npc3 = create_sprite('C:/Wander-Warriors/Sprites/NPCs/Mat/Mateus.png', (1320, 1120), camera_group)
+
+    # Definição do tamanho da caixa de texto e do texto
+    text_box_width = 400
+    text_box_height = 100
+    npc_interaction_text = "Olá! Sou um NPC interativo."
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
 
-    screen.fill('#71ddee')
+        # Verificação de teclas pressionadas para movimentação
+        player_input(player, wanderley_up, wanderley_down, wanderley_right)
+        move_player(player, player.speed, scenario_rect)
+        animate_player(player)
 
-    # Atualiza o grupo de sprites
-    camera_group.update()
+        # Desenho de todos os elementos na tela
+        custom_draw(camera_group, player)
 
-    # Desenho do grupo de câmera
-    camera_group.custom_draw(player)
+        # Exemplo de interação com NPCs
+        for npc in [npc1, npc2, npc3]:
+            if player.rect.colliderect(npc.rect):
+                draw_text_box(screen, npc_interaction_text, (640, 100), text_box_width, text_box_height)
 
-    # Verificar proximidade com NPC1
-    if player.rect.colliderect(npc1.rect):
-        # Mostrar mensagem se a tecla 'E' for pressionada
-        keys = pygame.key.get_pressed()
-        if keys[pygame.K_e]:
-            draw_text_box(screen, "Olá, eu sou o Hellen!", (640, 650), 400, 60)
+        pygame.display.update()
+        clock.tick(60)
 
-    # Verificar proximidade com NPC2
-    if player.rect.colliderect(npc2.rect):
-        keys = pygame.key.get_pressed()
-        if keys[pygame.K_e]:
-            draw_text_box(screen, "Oi, eu sou o Isac!", (640, 650), 400, 60)
 
-    # Verificar proximidade com NPC3
-    if player.rect.colliderect(npc3.rect):
-        keys = pygame.key.get_pressed()
-        if keys[pygame.K_e]:
-            draw_text_box(screen, "Olá, eu sou o Mateus!", (640, 650), 400, 60)
-
-    pygame.display.update()
-    clock.tick(60)
-
+if __name__ == "__main__":
+    main()
