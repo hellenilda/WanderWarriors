@@ -222,16 +222,19 @@ def main():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_e and interaction_npc:
                     npc_name = interaction_npc
+                    kiki = pygame.mixer.Sound('Músicas/kiki.mp3')
+
+                    # Dentro do loop principal
                     if bubble_displayed:
                         # Avançar para o próximo balão
                         current_bubble_index = (current_bubble_index + 1) % len(speech_bubbles[npc_name])
                         if current_bubble_index == 0:
                             bubble_displayed = False  # Ocultar o balão após o último
-                        # if npc_name == 'Isac':
-                        #     kiki = pygame.mixer.music.load('Músicas/kiki.mp3')
-                        #     pygame.mixer.music.play(kiki)
+                        if npc_name == 'Isac':
+                            kiki.play()
                     else:
                         bubble_displayed = True  # Mostrar o balão
+
 
         # Atualizar entrada do jogador e movimento
         update_player_input(player, wanderley_up, wanderley_down, wanderley_right)
