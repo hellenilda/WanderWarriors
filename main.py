@@ -18,8 +18,8 @@ def load_animation_frames(base_path, frame_count, size):
     return [load_and_scale_image(f"{base_path}{i}.png", size) for i in range(1, frame_count + 1)]
 
 # Função para carregar balões de fala
-def load_speech_bubbles(count, size):
-    return [load_and_scale_image(f'Sprites/dialogo/{i}.png', size) for i in range(1, count + 1)]
+def load_speech_bubbles(count, size, npc):
+    return [load_and_scale_image(f'Sprites/dialogos/{npc}/{i}.png', size) for i in range(1, count + 1)]
 
 # Função para desenhar a caixa de texto
 def draw_speech_bubble(surface, bubble_image, screen_width):
@@ -166,8 +166,12 @@ def main():
     wanderley_right = load_animation_frames('Sprites/personagens/Vander/Lados/Sprite-lados-', 3, (64, 64))
 
     # Carregar balões de fala
-    bubble_size = (564, 350)  # Tamanho original dos balões de fala
-    speech_bubbles = load_speech_bubbles(7, bubble_size)  # Ajuste o número de balões de fala
+    bubble_size = (564, 350)
+    speech_bubbles = {
+        'Hellen': load_speech_bubbles(7, bubble_size, 'Hellen'),  # 7 balões de fala para Hellen
+        'Isac': load_speech_bubbles(2, bubble_size, 'Isac'),    # 2 balões de fala para Isac
+        'Mateus': load_speech_bubbles(3, bubble_size, 'Mateus')   # 4 balões de fala para Mateus
+    }
 
     scenario_rect = cenario.get_rect()
     camera_group = create_camera_group(scenario_rect, cenario)
@@ -199,20 +203,16 @@ def main():
     for path, pos, size in fundo_info:
         create_sprite(path, pos, camera_group, size)
 
-    # Instanciar NPCs
-    npcs = [
-        create_sprite('Sprites/personagens/NPCs/Hellen.png', (1420, 550), camera_group),
-        create_sprite('Sprites/personagens/NPCs/Isac.png', (100, 550), camera_group),
-        create_sprite('Sprites/personagens/NPCs/Mateus.png', (1320, 1120), camera_group)
-    ]
-
-    text_box_width = 400
-    text_box_height = 100
-    npc_interaction_text = "Olá! Sou um NPC interativo."
+    # Instanciar NPCs com identificadores
+    npcs = {
+        'Hellen': create_sprite('Sprites/personagens/NPCs/Hellen.png', (1420, 550), camera_group),
+        'Isac': create_sprite('Sprites/personagens/NPCs/Isac.png', (100, 550), camera_group),
+        'Mateus': create_sprite('Sprites/personagens/NPCs/Mateus.png', (1320, 1120), camera_group)
+    }
 
     current_bubble_index = 0
-    bubble_displayed = False  # Para controlar a exibição do balão
-    interaction_npc = None  # Para saber qual NPC está sendo interagido
+    bubble_displayed = False
+    interaction_npc = None  # Armazenar o nome do NPC interagido
 
     while True:
         for event in pygame.event.get():
@@ -221,11 +221,15 @@ def main():
                 sys.exit()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_e and interaction_npc:
+                    npc_name = interaction_npc
                     if bubble_displayed:
                         # Avançar para o próximo balão
-                        current_bubble_index = (current_bubble_index + 1) % len(speech_bubbles)
+                        current_bubble_index = (current_bubble_index + 1) % len(speech_bubbles[npc_name])
                         if current_bubble_index == 0:
                             bubble_displayed = False  # Ocultar o balão após o último
+                        # if npc_name == 'Isac':
+                        #     kiki = pygame.mixer.music.load('Músicas/kiki.mp3')
+                        #     pygame.mixer.music.play(kiki)
                     else:
                         bubble_displayed = True  # Mostrar o balão
 
@@ -236,9 +240,9 @@ def main():
 
         # Verificar interação com NPCs
         interaction_npc = None
-        for npc in npcs:
-            if player.rect.colliderect(npc.rect):
-                interaction_npc = npc
+        for npc_name, npc_sprite in npcs.items():
+            if player.rect.colliderect(npc_sprite.rect):
+                interaction_npc = npc_name
                 break
 
         # Desenhar a tela de fundo
@@ -249,7 +253,9 @@ def main():
 
         # Desenhar o balão de fala se estiver ativo
         if bubble_displayed and interaction_npc:
-            draw_speech_bubble(screen, speech_bubbles[current_bubble_index], screen.get_width())
+            bubble_set = speech_bubbles.get(interaction_npc, [])
+            if bubble_set:
+                draw_speech_bubble(screen, bubble_set[current_bubble_index], screen.get_width())
 
         pygame.display.update()
         clock.tick(60)
