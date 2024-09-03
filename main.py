@@ -189,22 +189,26 @@ def main():
     obstacle_sprites = pygame.sprite.Group()
 
     # Criação do jogador
-    player = create_player((1332, 755), camera_group, obstacle_sprites, wanderley_down)
+    player = create_player((1350, 370), camera_group, obstacle_sprites, wanderley_down)
 
     # Adicionando obstáculos
     sprites_info = [
-        ('Sprites/colisores/bloco-adm.png', (0, 0), (1210, 520)),
+        ('Sprites/colisores/bloco-adm.png', (0, 0), (1210, 540)),
         ('Sprites/colisores/estacionamento.png', (130, 785), (378, 257)),
-        # (Adicione mais obstáculos conforme necessário)
+        ('Sprites/colisores/frente-1.png', (0, 1005), (1118, 180)),
+        ('Sprites/colisores/frente-2.png', (1530, 940), (80, 200)),
+        ('Sprites/colisores/lampada-1.png', (1536, 370), (45, 228)),
+        ('Sprites/colisores/lampada-2.png', (1090, 790), (24, 95)),
+        ('Sprites/colisores/lampada-2.png', (1330, 590), (24, 95))
     ]
 
     for path, pos, size in sprites_info:
         create_sprite(path, pos, obstacle_sprites, size)
 
     # Instanciação dos NPCs com os sprites correspondentes
-    npc1 = create_sprite('Sprites/personagens/Isac/Isac.png', (1400, 755), camera_group)
-    npc2 = create_sprite('Sprites/personagens/Isac/Isac.png', (1500, 755), camera_group)
-    npc3 = create_sprite('Sprites/personagens/Isac/Isac.png', (1300, 755), camera_group)
+    npc1 = create_sprite('Sprites/personagens/Isac/Isac.png', (1420, 550), camera_group)
+    npc2 = create_sprite('Sprites/personagens/Isac/Isac.png', (100, 550), camera_group)
+    npc3 = create_sprite('Sprites/personagens/Isac/Isac.png', (1320, 1120), camera_group)
 
     # Definição do tamanho da caixa de texto e do texto
     text_box_width = 400
@@ -216,6 +220,7 @@ def main():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
+            print(f'Posição do jogador: {player.rect.topleft}')
 
         # Verificação de teclas pressionadas para movimentação
         player_input(player, wanderley_up, wanderley_down, wanderley_right)
