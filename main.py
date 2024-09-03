@@ -210,7 +210,7 @@ def main():
         ('Sprites/colisores/arvore.png', (1292, 799), (97,101)),
         ('Sprites/colisores/arco.png', (1165, 983), (355, 132)),
         ('Sprites/colisores/estacionamento-arbustos.png', (512, 768), (149, 91)),
-        ('Sprites/colisores/rampa.png', (1210, 0), (370, 372))
+        ('Sprites/colisores/rampa.png', (1210, 0), (390, 372))
     ]
 
     # Criar e adicionar sprites de fundo ao grupo da câmera
