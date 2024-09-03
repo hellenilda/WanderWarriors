@@ -169,8 +169,8 @@ def main():
     dimensoes_balao = (564, 350)
     baloes_fala = {
         'Hellen': coletar_baloes_fala(7, dimensoes_balao, 'Hellen'),  # 7 balões de fala para Hellen
-        'Isac': coletar_baloes_fala(2, dimensoes_balao, 'Isac'),    # 2 balões de fala para Isac
-        'Mateus': coletar_baloes_fala(3, dimensoes_balao, 'Mateus')   # 4 balões de fala para Mateus
+        'Isac': coletar_baloes_fala(10, dimensoes_balao, 'Isac'),    # 2 balões de fala para Isac
+        'Mateus': coletar_baloes_fala(10, dimensoes_balao, 'Mateus')   # 4 balões de fala para Mateus
     }
 
     regiao_cenario = cenario.get_rect()
@@ -232,6 +232,7 @@ def main():
                             ativar_balao = False  # Ocultar o balão após o último
                         if nome_npc == 'Isac':
                             kiki.play()
+                            
                     else:
                         ativar_balao = True  # Mostrar o balão
 
