@@ -178,7 +178,7 @@ def main():
 
     global cenario, wanderley_down, wanderley_up, wanderley_right
     cenario = pygame.image.load('Sprites/ifpb.jpg').convert_alpha()
-
+    
     # Carregar os frames de animação do jogador
     wanderley_down = load_animation_frames('Sprites/personagens/Vander/Baixo/Sprite-baixo-', 3, (64, 64))
     wanderley_up = load_animation_frames('Sprites/personagens/Vander/Cima/Sprite-cima-', 3, (64, 64))
@@ -193,9 +193,9 @@ def main():
 
     # Adicionando obstáculos
     sprites_info = [
-        ('Sprites/colisores/bloco-adm.png', (0, 0), (1210, 540)),
+        ('Sprites/colisores/bloco-adm.png', (0, 0), (1210, 500)),
         ('Sprites/colisores/estacionamento.png', (130, 785), (378, 257)),
-        ('Sprites/colisores/frente-1.png', (0, 1005), (1118, 180)),
+        ('Sprites/colisores/frente-1.png', (50, 995), (1125, 180)),
         ('Sprites/colisores/frente-2.png', (1530, 940), (80, 200)),
         ('Sprites/colisores/lampada-1.png', (1536, 370), (45, 228)),
         ('Sprites/colisores/lampada-2.png', (1090, 790), (24, 95)),
@@ -204,6 +204,18 @@ def main():
 
     for path, pos, size in sprites_info:
         create_sprite(path, pos, obstacle_sprites, size)
+
+    # Adicionando sprites de fundo diretamente
+    fundo_info = [
+        ('Sprites/colisores/arvore.png', (1292, 799), (97,101)),
+        ('Sprites/colisores/arco.png', (1165, 983), (355, 132)),
+        ('Sprites/colisores/estacionamento-arbustos.png', (512, 768), (149, 91)),
+        ('Sprites/colisores/rampa.png', (1210, 0), (370, 372))
+    ]
+
+    # Criar e adicionar sprites de fundo ao grupo da câmera
+    for path, pos, size in fundo_info:
+        create_sprite(path, pos, camera_group, size)
 
     # Instanciação dos NPCs com os sprites correspondentes
     npc1 = create_sprite('Sprites/personagens/Isac/Isac.png', (1420, 550), camera_group)
