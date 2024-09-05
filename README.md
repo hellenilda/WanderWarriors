@@ -25,7 +25,8 @@ Wander Warriors é um projeto desenvolvido para a matéria Algoritmos e Lógica 
 ---
 
 ## Prévia do jogo
-<img src=''>
+<img src='Sprites/previa/previa-1.png'>
+<img src='Sprites/previa/previa-2.png'>
 
 ---
 
