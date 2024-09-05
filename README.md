@@ -26,7 +26,6 @@ Wander Warriors é um projeto desenvolvido para a matéria Algoritmos e Lógica 
 
 ## Prévia do jogo
 <img src='Sprites/previa/previa-1.png'>
-<img src='Sprites/previa/previa-2.png'>
 
 ---
 
@@ -40,12 +39,9 @@ Wander Warriors é um projeto desenvolvido para a matéria Algoritmos e Lógica 
       pip install pygame
       ```
    - **Windows:**
-      - Adicione o pip às variáveis de ambiente;
-      - Pressione as teclas ``Windows + R`` e digite ``cmd`` para abrir o prompt de comando;
-      - No prompt de comando, digite o comando a seguir:
-         ```powershell
-         pip install pygame
-         ```
+     ```powershell
+     py -m pip install -U pygame --user
+     ```
 
 ## Como executar o projeto
 1. Clone este repositório e entre em seu diretório:
